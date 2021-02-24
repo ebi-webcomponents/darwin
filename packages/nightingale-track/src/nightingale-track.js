@@ -78,11 +78,20 @@ class NightingaleTrack extends NightingaleZoomable {
 
   static get observedAttributes() {
     return NightingaleZoomable.observedAttributes.concat([
-      "highlight",
       "color",
       "shape",
       "filters",
+      "layout",
     ]);
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    super.attributeChangedCallback(name, oldValue, newValue);
+    if (name === "layout") {
+      this._applyFilters();
+      this._layoutObj = this.getLayout();
+      this._createTrack();
+    }
   }
 
   _getFeatureColor(f) {
@@ -134,6 +143,9 @@ class NightingaleTrack extends NightingaleZoomable {
   }
 
   _createTrack() {
+    if (!this._data) {
+      return;
+    }
     this._layoutObj.init(this._data);
 
     select(this).selectAll("div").remove();
